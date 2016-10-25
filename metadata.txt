@@ -1,0 +1,39 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=tower_predictor
+qgisMinimumVersion=2.0
+description=Predicts the optimal location of the tower
+version=0.1
+author=IIIT
+email=kiran4399@gmail.com
+
+about=Given different vector layers, this plugin predicts the most optimal location of a tower.
+
+tracker=https://github.com/kiran4399/tower_predictor/issues
+repository=https://github.com/kiran4399/tower_predictor
+# End of mandatory metadata
+
+# Recommended items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=
+
+homepage=https://github.com/kiran4399/tower_predictor/wiki
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
