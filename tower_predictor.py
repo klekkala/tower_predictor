@@ -27,7 +27,7 @@ import resources
 # Import the code for the dialog
 from tower_predictor_dialog import tower_predictorDialog
 import os.path
-
+import optimize
 
 class tower_predictor:
     """QGIS Plugin Implementation."""
