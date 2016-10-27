@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>tower_predictorDialogBase</class>
- <widget class="QDialog" name="tower_predictorDialogBase" >
-  <property name="geometry" >
+ <widget class="QDialog" name="tower_predictorDialogBase">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,11 +10,11 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>tower_predictor</string>
   </property>
-  <widget class="QDialogButtonBox" name="button_box" >
-   <property name="geometry" >
+  <widget class="QDialogButtonBox" name="button_box">
+   <property name="geometry">
     <rect>
      <x>30</x>
      <y>240</y>
@@ -21,11 +22,76 @@
      <height>32</height>
     </rect>
    </property>
-   <property name="orientation" >
+   <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
-   <property name="standardButtons" >
+   <property name="standardButtons">
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>40</y>
+     <width>98</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>80</y>
+     <width>98</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_4">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>120</y>
+     <width>98</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_5">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>160</y>
+     <width>98</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_6">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>200</y>
+     <width>98</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
    </property>
   </widget>
  </widget>
@@ -37,13 +103,13 @@
    <receiver>tower_predictorDialogBase</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="source_label" >
-     <x>248</x>
-     <y>254</y>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
-    <hint type="destination_label" >
-     <x>157</x>
-     <y>274</y>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
@@ -53,13 +119,13 @@
    <receiver>tower_predictorDialogBase</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="source_label" >
-     <x>316</x>
-     <y>260</y>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
-    <hint type="destination_label" >
-     <x>286</x>
-     <y>274</y>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
