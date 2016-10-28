@@ -339,29 +339,7 @@ def testLMqr():
     return LMqr(fJ, pars2, (x, y), verbose = True)
 
 
-def point(x):
-	for i in range(1, len(total_numpoints)):
-		total = total+norm(x, towers(i))
-	return 100 - total
-
-
-
-def terrain(x, polygon):
-	return 100
-
-
-def habitat(x):
-	return 100
-
-def windspeed(x):
-	return 100
-
-
-def landcost(x):
-	return 100
-
-
-def cost(x, weight):
+def cost(x):
 
 	cost_value = 0
 	for i in range(1:5):
@@ -369,10 +347,10 @@ def cost(x, weight):
 			sum_val = total_point_distance(x)
 
 		elif x==line:
-			sum_val = point_line(x)
+			sum_val = min_point_line(x)
 
 		elif x==polygon:
-			sum_val = point_polygon(x)
+			sum_val = val_point_polygon(x)
 
 		cost_value = cost_value + (5-i)*sum_val
 	return cost_value

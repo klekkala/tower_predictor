@@ -181,6 +181,7 @@ class tower_predictor:
 
     def load_layer(layer):
 
+        feature = layer_feature()
         layer = qgis.utils.iface.activeLayer()
         iter = layer.getFeatures()
         for feature in iter:
@@ -206,9 +207,10 @@ class tower_predictor:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            weight = params
+            layers = get_all_layers()
+            priority = []
             for i in range(1:5):
-                priority.append(load_layer())
+                priority.append(load_layer(layers[i]))
 
             optimal_x = minimize(priority)
             print "Optimal location of seting up a tower is "
