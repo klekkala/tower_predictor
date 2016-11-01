@@ -5,7 +5,7 @@ Levenberg-Marquardt algorithm for data fitting.
 """
 
 import numpy
-
+import matplotlib.pyplot as plt
 from numpy import inner, diag, eye, Inf, dot
 from numpy.linalg import norm, solve
 
@@ -97,33 +97,6 @@ def fJr(pars, x, y = 0, calcJ = True):
 
     return r, Jr
 
-def fitparerror(fitpar, J, res):
-    """
-    fitpar: fit parameters
-    J: Jacobi matrix
-    r: residuum
-    """
-    import scipy.stats
-  
-    alpha = 0.05 #confidence level 95% for alpha = 0.05, 2sigma confidence limit
-    
-    N = numpy.max(J.shape) #number of points
-    m = len(fitpar) #number of parameters
-
-    rnorm = sum(res*res) #norm residuum
-  
-    sigma = numpy.sqrt(rnorm/(N - m)) # estimated standard deviation
-    
-    #R = numpy.linalg.qr(numpy.transpose(J), mode='r') # %QR Zerlegung
-    #Rinv = numpy.linalg.inv(R) #R\eye(size(R)); 
-    #diagonale = numpy.sum((Rinv*Rinv),1) #diagonal entries of inv(R^T R)
-
-    diagonale = numpy.diagonal( numpy.linalg.inv(numpy.inner(J,J)))
-
-    parerr = numpy.sqrt(diagonale) * sigma * scipy.stats.t.ppf(1-alpha/2, N-m);
-    parerrrel = parerr/fitpar #relative error
-
-    return parerr, sigma
 
 
 def LMqr(fun, pars, args,
@@ -230,49 +203,20 @@ def LMqr(fun, pars, args,
     return p
 
 
-def testfLMs():
-    x = numpy.linspace(-3,3,1001)
-    #       A   m   s  offs
-    pars = [1, 0.1, 1, 0.5]
-    y = gauss1d(pars, x)
-
-    #           m     s
-    startpar = [0.5, 2]
-
-    #f,c,F = fJl(startpar, x, y, calcJ = False)
-    #f,J   = fJl(startpar, x, y, calcJ = True)
-
-    #print "c: ", c
-    #print "f: ", f
-    #print "F: ", F
-    #print "J: ", J
-
-    p = LM(fJr, startpar, (x, y), verbose = True, tau = 1e-4)
-
-    print p
-
 def testLMqr():
     pars = [1, 0.1, 1, 0.5]
     x = numpy.linspace(-5,5,1000001)
     y = gauss1d(pars, x) # + numpy.random.randn(len(x))
-
     pars2 = [1.1, 0.15, 1.3, 0.2]
 
     return LMqr(fJ, pars2, (x, y), verbose = True)
 
 
 
-if __name__ == '__main__':
-    print testLMqr()
-    #print '-'*40
-    #print testLMqr()
-    
-
-
 def cost(x):
 
 	cost_value = 0
-	for i in range(1:5):
+	for i in range(5):
 		if x==point:
 			sum_val = total_point_distance(x)
 
@@ -288,5 +232,7 @@ def cost(x):
 
 def minimize(priority):
   x0 = np.array([0.0, 0.0])
-  res = minimize(cost, x0, method='lm', options={'xtol': 1e-8, 'disp': True})
   return res.x
+
+if __name__ == '__main__':
+    print testLMqr()
