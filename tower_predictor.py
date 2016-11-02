@@ -27,7 +27,7 @@ import resources
 # Import the code for the dialog
 from tower_predictor_dialog import tower_predictorDialog
 import os.path
-import optimize, helper
+import optimize
 
 class tower_predictor:
     """QGIS Plugin Implementation."""
@@ -179,25 +179,11 @@ class tower_predictor:
         del self.toolbar
 
 
-    def load_layer(layer):
+    def load_layer(self):
 
-        feature = layer_feature()
-        layer = qgis.utils.iface.activeLayer()
-        iter = layer.getFeatures()
-        for feature in iter:
-            geom = feature.geometry()
-            if geom.type() == QGis.Point:
-                xyCoords = geom.asPolyline()
-                return xyCoords
-
-            elif geom.type() == QGis.Line:
-                xyCoords = geom.asPolyline()
-                return xyCoords
-
-            elif geom.type() == QGis.Polygon:
-                xyCoords = geom.asPolyline()
-                return xyCoords
-
+        test_layer = project.read(QFileInfo('/home/kiran/sis_sem7/test_file.qgis'))
+        if test_layer:
+        return retval
 
     def run(self):
         """Run method that performs all the real work"""
@@ -207,12 +193,13 @@ class tower_predictor:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
+            retval = get_all_layers()
             layers = get_all_layers()
             priority = []
             for i in range(1:5):
                 priority.append(load_layer(layers[i]))
 
-            optimal_x = minimize(priority)
+            optimal_x = minimize(guess, tower, pop, elev, land)
             print "Optimal location of seting up a tower is "
             print optimal_x
             pass
