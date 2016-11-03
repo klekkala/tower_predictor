@@ -24,7 +24,17 @@ def point_polygon(x, polygon):
 	# Note that "line.distance(point)" would be identical
 	#return point.distance(line)
 
-def point_interpolate(x, y, elevx, elevy)
+def point_interpolate(x, y, elevx, elevy, elevation):
+	xel = np.array(elevx)
+	yel = np.array(elevy)
+	xco = np.array(x)
+	yco = np.array(y)
+
+	xxel, yyel = np.meshgrid(xel, yel)
+	z = np.array(elevation)
+	f = interpolate.interp2d(xel, yel, z, kind='cubic')
+	elev_value = f(x,y)
+	return elev_value
 
 def val_point_polygon(x, line_list):
 
