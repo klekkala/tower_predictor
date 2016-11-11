@@ -131,6 +131,8 @@ def minimize(guess, tower, pop, elev, land):
 
     return LMqr(fJ, guess, tower, pop, elev, land, b, verbose = True)
 
+def testfun():
+
 
 if __name__ == '__main__':
     print testfun()
