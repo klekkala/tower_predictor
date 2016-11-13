@@ -7,13 +7,14 @@ def point_distance(x, y, towerx, towery):
 	return np.sqrt((x2[0] - x1[0])**2 + (y2[1] - y1[1])**2)
 
 
-def point_polygon(x, polygon):
+def point_polygon(x, polygon, value):
 
-	for i in range(1,len(polygon)):
-		bbPath = mplPath.Path(polygon)
+	for unit in polygon:
+		bbPath = mplPath.Path(unit)
+		if bbPath.contains_point(x) == 1:
+			break
 
-	bbPath.contains_point(x)
-	return value
+	return value[i]
 
 #def point_line(x, line_coords):
 	#coords = np.loadtxt('points.txt')
@@ -54,23 +55,11 @@ def val_point_polygon(x, line_list):
 
 def feature_properties(tower, pop, elev, land):
 
-	y_tower = np.array()
-	y_pop = np.array()
-	y_elev = np.array()
-	y_land = np.array()
+	y_tower = np.array(tower)
+	y_pop = np.array(pop)
+	y_elev = numpy.full(len(elev), max(elev))
+	y_cost = numpy.full(len(land), min(land))
 
-	for i in range(len(tower)):
-		y_tower = np.append(tower[i].value)
 
-	for i in range(len(tower)):
-		y_pop = np.append(pop[i].value)
-
-	for i in range(len(tower)):
-		y_elev.append(elev[i].value)
-
-	for i in range(len(land)):
-		y_tower.append(land[i].value)
-
-    y_value = numpy.concatenate(y_tower, y_pop, y_elev, y_land)
-
-    return y_value
+	y_value = numpy.concatenate(y_tower, y_pop, y_elev, y_land)
+	return y_value

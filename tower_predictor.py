@@ -22,12 +22,15 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
+from qgis.core import QgsVectorLayer, QGis
+
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
 from tower_predictor_dialog import tower_predictorDialog
 import os.path
-import optimize
+
+#import optimize
 
 class tower_predictor:
     """QGIS Plugin Implementation."""
@@ -179,11 +182,60 @@ class tower_predictor:
         del self.toolbar
 
 
+    def extract_features(self, layeriter):
+
+        feat = []
+        attr = []
+        for feature in layeriter:
+            geom = feature.geometry()
+            print "Feature ID %d: " % feature.id()
+
+            # show some information about the feature
+            if geom.type() == QGis.Point:
+                x = geom.asPoint()
+                feat.append(x)
+                attr.append(feature.attributes())
+
+            elif geom.type() == QGis.Polygon:
+                x = geom.asPolygon()
+                feat.append(x)
+                attr.append(feature.attributes())
+
+        return feat, attr
+
     def load_layer(self):
 
-        test_layer = project.read(QFileInfo('/home/kiran/sis_sem7/test_file.qgis'))
-        if test_layer:
-        return retval
+        layers = self.iface.legendInterface().layers()
+
+        #for layer in layers:
+
+            #pop_feat, pop_attr = self.extract_features(layer.getFeatures())
+            #print pop_feat
+
+        celllayer = QgsVectorLayer("/home/kiran/Dropbox/cell.shp", "celltower", "ogr")
+        cell_feat, cell_attr = self.extract_features(celllayer.getFeatures())
+        print cell_feat
+
+        
+        poplayer = QgsVectorLayer("/home/kiran/Dropbox/pop.shp", "population", "ogr")
+        pop_feat, pop_attr = self.extract_features(poplayer.getFeatures())
+
+        print pop_feat
+
+        elevlayer = QgsVectorLayer("/home/kiran/Dropbox/elev.shp", "elevation", "ogr")
+        elev_feat, elev_attr = self.extract_features(elevlayer.getFeatures())
+
+        print elev_feat
+
+        landlayer = QgsVectorLayer("/home/kiran/Dropbox/land.shp", "landcost", "ogr")
+        land_feat, land_attr = self.extract_features(landlayer.getFeatures())
+        print land_feat
+
+        guess = [0, 0]
+
+        #optimal_x = minimize(guess, cell_feat, cell_attr, pop_feat, pop_attr, elev_feat, elev_attr, land_feat, land_attr)
+        #print "Optimal location of seting up a tower is "
+
 
     def run(self):
         """Run method that performs all the real work"""
@@ -193,13 +245,6 @@ class tower_predictor:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            retval = get_all_layers()
-            layers = get_all_layers()
-            priority = []
-            for i in range(1:5):
-                priority.append(load_layer(layers[i]))
+            self.load_layer()
 
-            optimal_x = minimize(guess, tower, pop, elev, land)
-            print "Optimal location of seting up a tower is "
-            print optimal_x
             pass
