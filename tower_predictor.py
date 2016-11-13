@@ -22,7 +22,7 @@
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
-from qgis.core import QgsVectorLayer, QGis
+from qgis.core import QgsVectorLayer, QGis, QgsFeature, QgsPoint, QgsGeometry, QgsMapLayerRegistry
 
 # Initialize Qt resources from file resources.py
 import resources
@@ -203,6 +203,21 @@ class tower_predictor:
 
         return feat, attr
 
+
+    def draw_point(self, layer, point):
+        pr = layer.dataProvider()
+        feat = QgsFeature()
+
+        predict = QgsPoint(point[0], point[1])
+
+        feat.setGeometry(QgsGeometry.fromPoint(predict))
+        
+
+        pr.addFeatures([feat])
+        layer.updateExtents()
+        # add the layer to the canvas
+        QgsMapLayerRegistry.instance().addMapLayers([layer])
+
     def load_layer(self):
 
         layers = self.iface.legendInterface().layers()
@@ -231,8 +246,7 @@ class tower_predictor:
         land_feat, land_attr = self.extract_features(landlayer.getFeatures())
         print land_feat
 
-        guess = [0, 0]
-
+        self.draw_point(celllayer, [1500,1500])
         #optimal_x = minimize(guess, cell_feat, cell_attr, pop_feat, pop_attr, elev_feat, elev_attr, land_feat, land_attr)
         #print "Optimal location of seting up a tower is "
 
@@ -246,5 +260,4 @@ class tower_predictor:
         # See if OK was pressed
         if result:
             self.load_layer()
-
             pass

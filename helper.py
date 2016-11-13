@@ -1,20 +1,22 @@
 import shapely.geometry as geom
 import numpy as np
-import matplotlib as mplPath
+import matplotlib.path as mplPath
+from scipy import interpolate
 
 def point_distance(x, y, towerx, towery):
 
-	return np.sqrt((x2[0] - x1[0])**2 + (y2[1] - y1[1])**2)
+	return np.sqrt((towerx - x)**2 + (towery - y)**2)
 
 
-def point_polygon(x, polygon, value):
+def point_polygon(x, y, polygon, value):
 
-	for unit in polygon:
-		bbPath = mplPath.Path(unit)
-		if bbPath.contains_point(x) == 1:
+	point = [x, y]
+	for i in range(0,len(polygon)):
+		bbPath = mplPath.Path(polygon[i])
+		if bbPath.contains_point(point) == 1:
 			break
 
-	return value[i]
+	return np.array([value[i]])
 
 #def point_line(x, line_coords):
 	#coords = np.loadtxt('points.txt')
@@ -26,14 +28,12 @@ def point_polygon(x, polygon, value):
 	#return point.distance(line)
 
 def point_interpolate(x, y, elevx, elevy, elevation):
-	xel = np.array(elevx)
-	yel = np.array(elevy)
-	xco = np.array(x)
-	yco = np.array(y)
 
-	xxel, yyel = np.meshgrid(xel, yel)
-	z = np.array(elevation)
-	f = interpolate.interp2d(xel, yel, z, kind='cubic')
+## don't forget to change the shape
+	z = np.zeros((5,5), dtype = np.float_)
+	for i in range(0, len(elevation)):
+		z[i, i] = elevation[i]
+	f = interpolate.interp2d(elevx, elevy, z, kind='cubic')
 	elev_value = f(x,y)
 	return elev_value
 
@@ -56,10 +56,10 @@ def val_point_polygon(x, line_list):
 def feature_properties(tower, pop, elev, land):
 
 	y_tower = np.array(tower)
-	y_pop = np.array(pop)
-	y_elev = numpy.full(len(elev), max(elev))
-	y_cost = numpy.full(len(land), min(land))
+	y_pop = np.full(4,0)
+	y_elev = np.array([max(elev)])
+	y_cost = np.array([min(land)])
 
 
-	y_value = numpy.concatenate(y_tower, y_pop, y_elev, y_land)
+	y_value = np.concatenate((y_tower, y_pop, y_elev, y_cost))
 	return y_value
