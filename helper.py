@@ -30,7 +30,7 @@ def point_polygon(x, y, polygon, value):
 def point_interpolate(x, y, elevx, elevy, elevation):
 
 ## don't forget to change the shape
-	z = np.zeros((5,5), dtype = np.float_)
+	z = np.zeros(elevx.shape+elevy.shape, dtype = np.float_)
 	for i in range(0, len(elevation)):
 		z[i, i] = elevation[i]
 	f = interpolate.interp2d(elevx, elevy, z, kind='cubic')
@@ -56,7 +56,7 @@ def val_point_polygon(x, line_list):
 def feature_properties(tower, pop, elev, land):
 
 	y_tower = np.array(tower)
-	y_pop = np.full(4,0)
+	y_pop = np.full(len(pop),0)
 	y_elev = np.array([max(elev)])
 	y_cost = np.array([min(land)])
 

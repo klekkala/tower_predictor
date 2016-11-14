@@ -25,7 +25,7 @@ from PyQt4.QtGui import QAction, QIcon
 from qgis.core import QgsVectorLayer, QGis, QgsFeature, QgsPoint, QgsGeometry, QgsMapLayerRegistry
 
 # Initialize Qt resources from file resources.py
-import resources
+import resources, optimize
 # Import the code for the dialog
 from tower_predictor_dialog import tower_predictorDialog
 import os.path
@@ -205,13 +205,13 @@ class tower_predictor:
 
 
     def draw_point(self, layer, point):
-        pr = layer.dataProvider()
+        pr = layer.dataProvider() 
         feat = QgsFeature()
 
         predict = QgsPoint(point[0], point[1])
 
         feat.setGeometry(QgsGeometry.fromPoint(predict))
-        
+        feat.setAttributes(['NULL', 50])
 
         pr.addFeatures([feat])
         layer.updateExtents()
@@ -229,26 +229,56 @@ class tower_predictor:
 
         celllayer = QgsVectorLayer("/home/kiran/Dropbox/cell.shp", "celltower", "ogr")
         cell_feat, cell_attr = self.extract_features(celllayer.getFeatures())
+        cell_feat = [list(elem) for elem in cell_feat]
+        attr_cell = []
+        for attr in cell_attr:
+            attr_cell.append(int(attr[1]))
         print cell_feat
 
-        
         poplayer = QgsVectorLayer("/home/kiran/Dropbox/pop.shp", "population", "ogr")
         pop_feat, pop_attr = self.extract_features(poplayer.getFeatures())
-
+        pop_feat = [list(elem) for elem in pop_feat]
+        attr_pop = []
+        for attr in pop_attr:
+            attr_pop.append(int(attr[1]))
         print pop_feat
 
         elevlayer = QgsVectorLayer("/home/kiran/Dropbox/elev.shp", "elevation", "ogr")
         elev_feat, elev_attr = self.extract_features(elevlayer.getFeatures())
-
+        elev_feat = [list(elem) for elem in elev_feat]
+        attr_elev = []
+        for attr in elev_attr:
+            attr_elev.append(int(attr[1]))
         print elev_feat
 
         landlayer = QgsVectorLayer("/home/kiran/Dropbox/land.shp", "landcost", "ogr")
         land_feat, land_attr = self.extract_features(landlayer.getFeatures())
-        print land_feat
+        attr_land = []
+        for attr in land_attr:
+            attr_land.append(int(attr[1]))
 
-        self.draw_point(celllayer, [1500,1500])
-        #optimal_x = minimize(guess, cell_feat, cell_attr, pop_feat, pop_attr, elev_feat, elev_attr, land_feat, land_attr)
-        #print "Optimal location of seting up a tower is "
+        cost_feat = []
+        for each in land_feat:
+            each = each[0]
+            land_list = [list(elem) for elem in each]
+            cost_feat.append(land_list)
+        print cost_feat
+
+        geomx = []
+        geomy = []
+        for geom in pop_feat:
+            geomx.append(geom[0])
+            geomy.append(geom[1])
+        guess = [(sum(geomx)/len(geomx)), (sum(geomy)/len(geomy))]
+
+        ret = optimize.minimize(guess, cell_feat, attr_cell, pop_feat, attr_pop, elev_feat, attr_elev, cost_feat, attr_land)
+        #ret = optimize.testfun(guess)
+
+        ##Draw the optimal location of cell tower
+        newlayer = QgsVectorLayer("/home/kiran/Dropbox/new.shp", "optimal_tower", "ogr")
+        self.draw_point(newlayer, ret)
+        print "optimal location is"
+        print ret
 
 
     def run(self):

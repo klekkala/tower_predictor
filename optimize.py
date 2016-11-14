@@ -19,7 +19,6 @@ def cost(guess, towerx, towery, elevx, elevy, elevation, popx, popy, land, land_
     elev_interp = helper.point_interpolate(x, y, elevx, elevy, elevation)
     land_value = helper.point_polygon(x, y, land, land_attr)
     cost_value = numpy.concatenate((tower_distance, pop_distance, elev_interp, land_value))
-
     return cost_value
 
 
@@ -28,16 +27,16 @@ def fJ(guess, towerx, towery, elevx, elevy, elevation, popx, popy, land, land_at
     "Calculation of function and Jacobian"
     x = guess[0]
     y = guess[1]
-    ##hardcoded the size!!
-    size = towerx.shape+popx.shape+elevx.shape+elevx.shape
+
+    size = towerx.shape[0]+popx.shape[0]+2
     f = cost(guess, towerx, towery, elevx, elevy, elevation, popx, popy, land, land_attr)
     if 1:
-        J = numpy.empty(shape = (2,10), dtype = numpy.float_)
+        J = numpy.empty(shape = (2,size), dtype = numpy.float_)
         tower_jacobx = (towerx - x)/helper.point_distance(x, y, towerx, towery)
         tower_jacoby = (towery - y)/helper.point_distance(x, y, towerx, towery)
 
-        pop_jacobx = (popx - x)/helper.point_distance(x, y, towerx, towery)
-        pop_jacoby = (popy - y)/helper.point_distance(x, y, towerx, towery)
+        pop_jacobx = (popx - x)/helper.point_distance(x, y, popx, popy)
+        pop_jacoby = (popy - y)/helper.point_distance(x, y, popx, popy)
         
         elev_jacobx = elev_jacoby = numpy.zeros(1)
         cost_jacobx = cost_jacoby = numpy.zeros(1)
@@ -46,12 +45,11 @@ def fJ(guess, towerx, towery, elevx, elevy, elevation, popx, popy, land, land_at
         J[1] = numpy.concatenate((tower_jacoby, pop_jacoby, elev_jacoby, cost_jacoby))
 
         return f - b, J
-    return f - b
 
 
 
 def LMqr(fun, guess, tower, pop, elev, elevation, land, land_attr, b,
-         tau = 1e-2, eps1 = 1e-4, eps2 = 1e-4, kmax = 10000,
+         tau = 1e-1, eps1 = 1e-6, eps2 = 1e-6, kmax = 100,
          verbose = False):
 
     from scipy.linalg import lstsq
@@ -63,13 +61,13 @@ def LMqr(fun, guess, tower, pop, elev, elevation, land, land_attr, b,
     2)."""
     
     towerx = numpy.array([x[0] for x in tower])
-    towery = numpy.array([x[0] for x in tower])
+    towery = numpy.array([x[1] for x in tower])
 
     popx = numpy.array([x[0] for x in pop])
-    popy = numpy.array([x[0] for x in pop])
+    popy = numpy.array([x[1] for x in pop])
 
     elevx = numpy.array([x[0] for x in elev])
-    elevy = numpy.array([x[0] for x in elev])
+    elevy = numpy.array([x[1] for x in elev])
     
     f, J = fun(guess, towerx, towery, elevx, elevy, elevation, popx, popy, land, land_attr, b)
 
@@ -97,9 +95,9 @@ def LMqr(fun, guess, tower, pop, elev, elevation, land, land_attr, b,
                             numpy.sqrt(mu)*I))
 
        
-        q, r = scipy.linalg.qr(Des, mode = 'economic')
-        d4   = scipy.linalg.cho_solve( (r, False), -inner(J, f))
-        #d4 = solve( A + mu*I, -g)
+        #q, r = scipy.linalg.qr(Des, mode = 'economic')
+        #d4   = scipy.linalg.cho_solve( (r, False), -inner(J, f))
+        d4 = solve( A + mu*I, -g)
         print 'd4', d4, time.time() - tic
 
 
@@ -108,8 +106,7 @@ def LMqr(fun, guess, tower, pop, elev, elevation, land, land_attr, b,
             stop = True
             reason = 'small step'
             break
-
-        guessnew = guess + d4
+        guessnew = guess + tau*d4
 
         fnew, Jnew = fun(guess, towerx, towery, elevx, elevy, elevation, popx, popy, land, land_attr, b)
         rho = (norm(f) - norm(fnew))/inner(d4, mu*d4 - g) # /2????
@@ -135,22 +132,19 @@ def LMqr(fun, guess, tower, pop, elev, elevation, land, land_attr, b,
 
     if verbose:
         print reason
-    return guess, guessnew
+    return guessnew
 
 
 
 def minimize(guess, cell_feat, cell_attr, pop_feat, pop_attr, elev_feat, elev_attr, land_feat, land_attr):
 
-    b = feature_properties(cell_attr, pop_attr, elev_attr, land_attr)
+    b = helper.feature_properties(cell_attr, pop_attr, elev_attr, land_attr)
+    return LMqr(fJ, guess, cell_feat, pop_feat, elev_feat, elev_attr, land_feat, land_attr, b, verbose = True)
 
-    return LMqr(fJ, guess, tower_feat, pop_feat, elev_feat, land_feat, b, verbose = True)
-
-def testfun():
-    guess = [1500, 1500]
+def testfun(guess):
     tower = [[-2579.06, 1554.85], [-2426.5, 1476.84], [-2532.25, 1390.16], [-2438.64, 1377.16]]
     pop = [[-2439.5, 1483.13], [-2364.09, 1471.86], [-2338.52, 1377.37], [-2248.81, 1429.38]]
     elev = [[-2541.79, 1506.75], [-2476.78, 1446.94], [-2340.69, 1551.82], [-2366.69, 1383.66], [-2310.35, 1481.61]]
-
     cost = [[[-2614.6, 1589.53], [-2424.77, 1612.06], [-2273.94, 1453.44], [-2347.62, 1356.35], [-2599, 1332.95], [-2614.6, 1589.53]], [[-2272.21, 1455.17], [-2177.73, 1399.69], [-2345.02, 1358.09], [-2272.21, 1455.17]], [[-2423.9, 1612.93], [-2234.07, 1591.26], [-2275.68, 1456.9], [-2423.9, 1612.93]]]
     cell_attr = [23, 34, 55, 67]
     pop_attr = [2345, 3455, 2563, 3564]
@@ -160,5 +154,5 @@ def testfun():
     return LMqr(fJ, guess, tower, pop, elev, elev_attr, cost, land_attr, b, verbose = True)
 
 
-if __name__ == '__main__':
-    print testfun()
+#if __name__ == '__main__':
+    #print testfun([2000, 2000])
