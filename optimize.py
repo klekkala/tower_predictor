@@ -54,11 +54,6 @@ def LMqr(fun, guess, tower, pop, elev, elevation, land, land_attr, b,
 
     from scipy.linalg import lstsq
     import scipy.linalg
-
-    """Implementation of the Levenberg-Marquardt algorithm in pure
-    Python. Instead of using the normal equations this version uses QR
-    factorization for enhanced accuracy. Significantly slower (factor
-    2)."""
     
     towerx = numpy.array([x[0] for x in tower])
     towery = numpy.array([x[1] for x in tower])
